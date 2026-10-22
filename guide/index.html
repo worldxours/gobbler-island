@@ -1,0 +1,762 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crew Guide - Gold on Gobbler Island</title>
+<meta name="description" content="How an idea becomes part of Gold on Gobbler Island: the voyage, the crew of tools, and every /arr2d2 command.">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<style>
+@font-face{font-family:"Pixel";src:url("pixel.ttf") format("truetype");font-display:swap}
+:root{
+  --ink:#102d32; --deep:#0b2227; --panel:#16343b; --panel2:#1d424a; --edge:#a48b5e;
+  --gold:#efbc64; --paper:#f1e5c9; --paper2:#e6d6b0; --teal:#7cc9b5; --red:#e5806b; --text:#f1e5c9; --mute:#a9bdb6;
+  --sea1:#14424a; --sea2:#0f3037;
+  --radius:10px;--r2:190px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:70px}
+body{margin:0;background:var(--ink);color:var(--text);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+img,.spr{image-rendering:pixelated}
+a{color:var(--gold)}
+a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+h1,h2,h3,.px{font-family:"Pixel",ui-monospace,monospace;font-weight:normal;letter-spacing:.02em}
+h2{font-size:clamp(22px,4vw,34px);color:var(--gold);margin:0 0 6px;line-height:1.25}
+h3{font-size:18px;margin:0 0 6px;color:var(--gold)}
+code,kbd,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+code{background:#0b2227;border:1px solid #2c5058;border-radius:5px;padding:1px 6px;font-size:.9em;color:var(--teal)}
+.wrap{max-width:1040px;margin:0 auto;padding:0 16px}
+section{padding:64px 0 24px}
+.lead{color:var(--mute);max-width:62ch;margin:0 0 24px}
+.sr{position:absolute;left:-9999px}
+
+/* nav */
+nav.top{position:sticky;top:0;z-index:50;background:#0b2227ee;backdrop-filter:blur(6px);border-bottom:2px solid #2c5058}
+nav.top .wrap{display:flex;gap:4px;align-items:center;overflow-x:auto;scrollbar-width:none}
+nav.top a{flex:none;text-decoration:none;color:var(--paper);font:13px "Pixel",monospace;padding:14px 10px;border-bottom:3px solid transparent}
+nav.top a:hover,nav.top a.on{color:var(--gold);border-color:var(--gold)}
+nav.top .brand{margin-right:auto;display:flex;gap:8px;align-items:center;color:var(--gold)}
+nav.top .brand img{width:24px;height:24px}
+
+/* hero */
+.hero{position:relative;overflow:hidden;padding:70px 0 120px;background:linear-gradient(#0d2a31,#14424a 70%,#1a5560)}
+.stars{position:absolute;inset:0;pointer-events:none}
+.stars i{position:absolute;width:3px;height:3px;background:var(--paper);opacity:.5;animation:tw 3s infinite ease-in-out}
+@keyframes tw{50%{opacity:.1}}
+.hero h1{font-size:clamp(30px,7vw,64px);line-height:1.15;margin:8px 0 14px;color:var(--paper);text-shadow:3px 3px 0 #0b2227}
+.hero h1 em{color:var(--gold);font-style:normal}
+.hero p{max-width:56ch;color:#cfe0d9;font-size:19px}
+.tag{display:inline-block;font:12px "Pixel",monospace;color:var(--ink);background:var(--gold);padding:4px 10px;border-radius:4px}
+.btns{display:flex;flex-wrap:wrap;gap:12px;margin-top:26px}
+.btn{display:inline-flex;gap:10px;align-items:center;text-decoration:none;font:15px "Pixel",monospace;padding:13px 18px;border-radius:8px;border:2px solid var(--edge);color:var(--paper);background:var(--panel);box-shadow:0 4px 0 #0b2227;transition:transform .08s}
+.btn:hover{transform:translateY(-2px);background:var(--panel2)}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 #0b2227}
+.btn.gold{background:var(--gold);color:var(--ink);border-color:#fff3cf}
+.btn.gold:hover{background:#ffd27e}
+.btn img{width:24px;height:24px}
+.waves{position:absolute;left:0;right:0;bottom:0;height:90px}
+.waves svg{position:absolute;bottom:0;width:200%;height:100%;animation:wave 14s linear infinite}
+.waves svg:nth-child(2){animation-duration:22s;animation-direction:reverse;opacity:.7;bottom:-8px}
+@keyframes wave{to{transform:translateX(-50%)}}
+.parrot{position:absolute;right:5%;bottom:95px;cursor:pointer;border:0;background:none;padding:0;animation:bob 3s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-14px)}}
+.spr{display:inline-block;background-repeat:no-repeat}
+.spr.parrot0{width:120px;height:100px;background-image:url(img/parrot_0.png);background-size:640px 640px;background-position:-260px -348px}
+.spr.chest{width:120px;height:124px;background-image:url(img/chest_0.png);background-size:640px 640px;background-position:-260px -424px}
+.spr.chest.open{background-image:url(img/chest_1.png);background-position:-260px -428px}
+.bubble{position:absolute;right:calc(5% + 40px);bottom:calc(95px + var(--r2) + 10px);max-width:230px;z-index:3;background:var(--paper);color:var(--ink);border-radius:10px;padding:8px 12px;font-size:14px;line-height:1.35;opacity:0;transform:translateY(6px);transition:.2s;pointer-events:none}
+.bubble.show{opacity:1;transform:none}
+@media (max-width:900px){:root{--r2:130px}}
+@media (max-width:640px){:root{--r2:96px}.parrot{right:10px;bottom:88px;animation:none}.bubble{right:10px}.hero{padding-bottom:210px}}
+
+.dev{display:inline-block;font:.78em ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#7cc9b522;border:1px solid #7cc9b588;color:var(--teal);border-radius:99px;padding:0 8px;margin:0 2px;white-space:nowrap;vertical-align:baseline}
+.parch .dev{background:#7a3b0014;border-color:#a8814a;color:#7a3b00}
+.devline{font-size:14px;border-left:4px solid #a8814a;padding:2px 10px;margin:6px 0 10px;color:#5b4a2a}
+.devline b{font-family:ui-monospace,Menlo,monospace;color:#7a3b00}
+.parch .devline{margin-top:2px}
+.smooth{image-rendering:auto!important}
+.r2{width:var(--r2);height:var(--r2);border-radius:18px;border:3px solid var(--edge);box-shadow:0 6px 0 #0b2227;display:block;background:#2a4b52}
+.meet{display:flex;gap:18px;align-items:center;margin-bottom:8px}
+.meet .lead{margin:0 0 16px}
+.meet img{width:92px;height:92px;flex:none;border-radius:16px;border:2px solid var(--edge);box-shadow:0 4px 0 #0b2227}
+@media (max-width:520px){.meet img{width:64px;height:64px}}
+.av img{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block}
+.av.bot.pic{background:none}
+.who img.smooth{border-radius:5px}
+/* parchment panels */
+.card{background:var(--panel);border:2px solid var(--edge);border-radius:var(--radius);padding:18px 20px;box-shadow:0 5px 0 #0b2227}
+.parch{background:var(--paper);color:#2b2a22;border:3px solid #8a6f3e;border-radius:var(--radius);padding:20px 22px;box-shadow:0 5px 0 #0b2227,inset 0 0 40px #c9b27a66}
+.parch h3{color:#7a4b12}
+.parch code{background:#e6d6b0;border-color:#c2ab75;color:#7a3b00}
+.parch p{margin:.4em 0}
+
+/* voyage */
+.map{position:relative;margin:26px 0 18px;padding:34px 8px 6px}
+.track{position:absolute;left:5%;right:5%;top:52px;border-top:4px dotted var(--edge);opacity:.7}
+.stops{display:grid;grid-template-columns:repeat(8,1fr);position:relative}
+.stop{background:none;border:0;color:var(--paper);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;font:12px "Pixel",monospace;padding:0 2px}
+.stop .dot{width:38px;height:38px;border-radius:50%;background:var(--panel);border:3px solid var(--edge);display:grid;place-items:center;font:15px "Pixel",monospace;transition:.2s}
+.stop span.t{display:block;max-width:92px;text-align:center;line-height:1.25}
+.stop:hover .dot{transform:scale(1.12)}
+.stop.done .dot{background:#2b5b4f;border-color:var(--teal)}
+.stop.on .dot{background:var(--gold);color:var(--ink);border-color:#fff3cf;transform:scale(1.25);box-shadow:0 0 0 5px #efbc6444}
+.ship{position:absolute;top:-8px;left:0;width:0;transition:left .5s cubic-bezier(.5,1.4,.5,1);pointer-events:none}
+.ship .spr{position:absolute;transform:translateX(-50%) scale(.5);transform-origin:bottom center;top:-22px}
+@media (max-width:760px){
+  .stops{grid-template-columns:repeat(8,44px);overflow-x:auto;gap:6px;padding-bottom:10px}
+  .stop span.t{display:none}.track,.ship{display:none}
+}
+.step{min-height:300px}
+.step .who{display:inline-flex;align-items:center;gap:8px;font:13px "Pixel",monospace;padding:4px 10px;border-radius:4px;background:#7a4b12;color:var(--paper);margin-bottom:8px}
+.step h3{font-size:24px}
+.cols{display:grid;grid-template-columns:1.3fr 1fr;gap:22px}
+@media (max-width:760px){.cols{grid-template-columns:1fr}}
+.see{background:#0000000f;border:2px dashed #8a6f3e;border-radius:8px;padding:10px 14px;margin-top:8px}
+.see b{font:12px "Pixel",monospace;color:#7a4b12;display:block;margin-bottom:6px}
+.chip{display:inline-block;font:12px ui-monospace,Menlo,monospace;padding:2px 9px;border-radius:99px;margin:2px 4px 2px 0;color:#fff;background:#4a6a72}
+.chip.wfy{background:#b87a1d}.chip.rfa{background:#2f7d5b}.chip.rhw{background:#5a5aa8}.chip.wfm{background:#a8453b}.chip.st{background:#3e6d78}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:16px}
+.cmdbox{display:flex;gap:8px;align-items:center;background:#0b2227;border-radius:8px;padding:8px 8px 8px 12px;margin:8px 0;color:var(--teal);font:15px ui-monospace,Menlo,monospace;word-break:break-word}
+.cmdbox span{flex:1}
+.copy{flex:none;font:12px "Pixel",monospace;background:var(--panel2);color:var(--paper);border:1px solid var(--edge);border-radius:5px;padding:6px 9px;cursor:pointer}
+.copy:hover{background:var(--edge);color:var(--ink)}
+.tip{border-left:5px solid var(--teal);background:#7cc9b522;padding:8px 12px;border-radius:0 8px 8px 0;margin-top:12px;font-size:15px}
+.parch .tip{background:#2f7d5b22;border-color:#2f7d5b}
+
+/* architecture */
+.arch{display:grid;grid-template-columns:1.5fr 1fr;gap:20px;align-items:start}
+@media (max-width:900px){.arch{grid-template-columns:1fr}}
+.archmap{background:linear-gradient(#0f3037,#123b43);border:2px solid var(--edge);border-radius:var(--radius);padding:8px}
+.archmap svg{width:100%;height:auto;display:block}
+.node{cursor:pointer}
+.node rect{fill:var(--panel);stroke:var(--edge);stroke-width:2;rx:8;transition:.15s}
+.node:hover rect,.node.on rect{fill:#2b5b4f;stroke:var(--gold)}
+.node text{fill:var(--paper);font:13px "Pixel",monospace;pointer-events:none}
+.node text.sub{font:11.5px system-ui,sans-serif;fill:var(--mute)}
+.node.on text{fill:var(--gold)}
+.edge{stroke:#5f8f88;stroke-width:2;fill:none;stroke-dasharray:6 6;animation:dash 1.2s linear infinite;opacity:.55}
+.edge.on{stroke:var(--gold);opacity:1;stroke-width:3}
+@keyframes dash{to{stroke-dashoffset:-12}}
+.zone{fill:none;stroke:#3d6a72;stroke-dasharray:3 5;stroke-width:2}
+.zonelabel{fill:#7aa6a0;font:11px "Pixel",monospace}
+.nodelist{display:none;gap:8px;flex-wrap:wrap}
+.nodelist button{font:13px "Pixel",monospace;background:var(--panel);color:var(--paper);border:2px solid var(--edge);border-radius:8px;padding:8px 10px;cursor:pointer}
+.nodelist button.on{background:var(--gold);color:var(--ink)}
+@media (max-width:640px){.archmap{display:none}.nodelist{display:flex;margin-bottom:12px}}
+.detail h3{font-size:22px}
+.detail .where{font-size:14px;color:#5b4a2a;border-top:1px dashed #8a6f3e;margin-top:10px;padding-top:8px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:14px;color:var(--mute);margin:10px 2px 0}
+
+/* commands */
+.tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.tab{font:14px "Pixel",monospace;background:var(--panel);color:var(--paper);border:2px solid var(--edge);border-radius:8px;padding:10px 14px;cursor:pointer}
+.tab[aria-selected=true]{background:var(--gold);color:var(--ink);border-color:#fff3cf}
+.cmds{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px}
+.cmd .cmdbox{font-size:16px}
+.cmd dl{margin:8px 0 0;font-size:15px}
+.cmd dt{font:11px "Pixel",monospace;color:#7a4b12;margin-top:8px}
+.cmd dd{margin:0}
+.rules{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.rule{flex:1 1 220px;background:var(--panel);border:2px solid #2c5058;border-radius:var(--radius);padding:12px 14px;font-size:15px}
+.rule b{display:block;color:var(--gold);font:13px "Pixel",monospace;margin-bottom:4px}
+
+/* playground */
+.play{display:grid;grid-template-columns:1fr 1.2fr;gap:20px}
+@media (max-width:860px){.play{grid-template-columns:1fr}}
+.field{margin-bottom:12px}
+.field label,.field .lab{display:block;font:12px "Pixel",monospace;color:var(--gold);margin-bottom:5px}
+select,input[type=text]{width:100%;font:16px ui-monospace,Menlo,monospace;background:#0b2227;color:var(--paper);border:2px solid var(--edge);border-radius:8px;padding:10px}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{font:12px "Pixel",monospace;background:var(--ink);color:var(--paper);border:2px solid #2c5058;border-radius:6px;padding:8px 10px;cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--teal);color:var(--ink);border-color:#d8fff3}
+.quick{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.quick button{font:13px ui-monospace,Menlo,monospace;background:#0000;color:var(--teal);border:1px dashed var(--teal);border-radius:99px;padding:3px 10px;cursor:pointer}
+.quick button:hover{background:#7cc9b522}
+.thread{background:#f6f1e3;color:#222;border-radius:10px;padding:14px;min-height:260px;border:3px solid #8a6f3e}
+.msg{display:flex;gap:10px;margin-bottom:12px;animation:pop .25s}
+@keyframes pop{from{transform:translateY(8px);opacity:0}}
+.av{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font:13px "Pixel",monospace;color:#fff}
+.av.me{background:#5a5aa8}.av.bot{background:#2f7d5b}.av.sys{background:#888}
+.bub{background:#fff;border:1px solid #d6cdb2;border-radius:10px;padding:8px 12px;font-size:15px;flex:1}
+.bub .nm{font:11px "Pixel",monospace;color:#7a4b12;display:block;margin-bottom:2px}
+.bub.nope{background:#eee;color:#555;font-style:italic}
+.checks{margin:6px 0 0;padding:0;list-style:none;font-size:14px}
+.checks li::before{content:"\2714  ";color:#2f7d5b}
+.checks li.x::before{content:"\2716  ";color:#a8453b}
+.small{font-size:13px;color:var(--mute)}
+.parch .small{color:#6b5a38}
+
+/* words */
+.pairs{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-bottom:26px}
+.pair{background:var(--panel);border:2px solid #2c5058;border-radius:var(--radius);padding:12px 14px;font-size:15px;transition:.15s}
+.pair:hover{border-color:var(--gold);transform:translateY(-2px)}
+.pair .a{display:block;color:var(--paper);font-weight:600}
+.pair .arrow{color:var(--gold);margin:0 4px}
+.pair .b{font:14px ui-monospace,Menlo,monospace;color:var(--teal)}
+.pair p{margin:6px 0 0;color:var(--mute);font-size:14px;line-height:1.45}
+.quiz .qtext{font-size:19px;margin:8px 0 12px}
+.quiz .opts{display:flex;flex-wrap:wrap;gap:8px}
+.quiz .opts button{font:15px ui-monospace,Menlo,monospace;background:#fff8;color:#2b2a22;border:2px solid #8a6f3e;border-radius:8px;padding:10px 14px;cursor:pointer}
+.quiz .opts button:hover{background:#fff}
+.quiz .opts button.ok{background:#2f7d5b;color:#fff;border-color:#175a3c}
+.quiz .opts button.no{background:#a8453b;color:#fff;border-color:#702a22}
+.quiz .fb{min-height:1.6em;margin-top:10px;font-size:15px}
+.quiz .score{float:right;font:13px "Pixel",monospace;color:#7a4b12}
+/* labels */
+.labels{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.lbl{background:var(--panel);border:2px solid #2c5058;border-radius:var(--radius);padding:12px 14px;font-size:15px}
+.lbl .chip{font-size:13px;margin-bottom:6px}
+
+/* docs */
+details{background:var(--panel);border:2px solid #2c5058;border-radius:var(--radius);margin-bottom:10px;padding:0 16px}
+details[open]{border-color:var(--edge)}
+summary{cursor:pointer;padding:14px 0;font:15px "Pixel",monospace;color:var(--paper);list-style:none;display:flex;gap:10px;align-items:center}
+summary::before{content:"\25B8";color:var(--gold);transition:.15s}
+details[open] summary::before{transform:rotate(90deg)}
+details>div{padding:0 0 14px;color:#d9e6e0}
+table{border-collapse:collapse;width:100%;font-size:15px}
+td,th{border-bottom:1px solid #2c5058;padding:6px 8px;text-align:left}
+th{font:12px "Pixel",monospace;color:var(--gold)}
+.gloss{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}
+.gloss div{background:#0b222788;border-radius:8px;padding:10px 12px;font-size:15px}
+.gloss b{color:var(--gold);font:13px "Pixel",monospace;display:block}
+.links{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.links a{display:block;text-decoration:none;color:var(--paper);background:var(--panel);border:2px solid var(--edge);border-radius:var(--radius);padding:14px 16px;box-shadow:0 4px 0 #0b2227}
+.links a:hover{background:var(--panel2);transform:translateY(-2px)}
+.links b{display:flex;gap:10px;align-items:center;font:15px "Pixel",monospace;color:var(--gold)}
+.links img{width:24px;height:24px}
+.links span{font-size:14px;color:var(--mute)}
+footer{margin-top:60px;padding:36px 0 50px;border-top:3px solid #2c5058;text-align:center;color:var(--mute);font-size:14px}
+.coin{position:fixed;top:-30px;width:24px;height:24px;background:url(img/icon_coin.png);background-size:24px;image-rendering:pixelated;z-index:99;pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
+.reveal{opacity:0;transform:translateY(18px);transition:.6s}
+.reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<nav class="top" aria-label="Sections">
+  <div class="wrap">
+    <a class="brand" href="#top"><img class="smooth" src="img/arr2d2.png" alt="" style="border-radius:6px">Crew Guide</a>
+    <a href="#voyage">The voyage</a>
+    <a href="#words">Words</a>
+    <a href="#crew">The crew</a>
+    <a href="#commands">Commands</a>
+    <a href="#practice">Practice</a>
+    <a href="#rules">Rules</a>
+    <a href="#docs">Docs</a>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="stars" id="stars" aria-hidden="true"></div>
+  <button class="parrot" id="parrot" aria-label="Say hi to arr2d2"><img class="r2 smooth" src="img/arr2d2.png" alt="arr2d2, the pirate barrel robot" width="190" height="190"></button>
+  <div class="bubble" id="bubble" role="status"></div>
+  <div class="wrap">
+    <span class="tag">GOBBLER STUDIOS CREW GUIDE</span>
+    <h1>From a wild idea to <em>live in the game</em></h1>
+    <p>You think of it. A robot helper builds it. A crewmate checks it. Then it sails into the real game. This page shows you every step, every tool on the ship, and every <code>/arr2d2</code> command. New to tech words? Every one is shown next to a plain one, so you learn both.</p>
+    <div class="btns">
+      <a class="btn gold" href="../"><img src="img/icon_sword.png" alt="">Play the game</a>
+      <a class="btn" href="https://piratehub.ca" rel="noopener"><img src="img/icon_compass.png" alt="">Open PirateHub</a>
+      <a class="btn" href="#voyage"><img src="img/icon_bag.png" alt="">Start the tour</a>
+    </div>
+  </div>
+  <div class="waves" aria-hidden="true">
+    <svg viewBox="0 0 1200 90" preserveAspectRatio="none"><path d="M0 40 Q75 10 150 40 T300 40 T450 40 T600 40 T750 40 T900 40 T1050 40 T1200 40 V90 H0Z" fill="#0f3037"/></svg>
+    <svg viewBox="0 0 1200 90" preserveAspectRatio="none"><path d="M0 50 Q75 20 150 50 T300 50 T450 50 T600 50 T750 50 T900 50 T1050 50 T1200 50 V90 H0Z" fill="#102d32"/></svg>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ VOYAGE ============ -->
+<section id="voyage">
+  <div class="wrap">
+    <h2>The voyage of an idea</h2>
+    <p class="lead">Eight stops from "what if..." to "it's in the game". Click a stop, or use the buttons or your arrow keys.</p>
+
+    <div class="map" id="map">
+      <div class="track"></div>
+      <div class="ship" id="ship"><span class="spr parrot0" style="width:120px;height:100px" aria-hidden="true"></span></div>
+      <div class="stops" id="stops"></div>
+    </div>
+
+    <div class="parch step reveal" id="step" aria-live="polite"></div>
+    <div class="nav">
+      <button class="btn" id="prev">&larr; Back</button>
+      <button class="btn gold" id="next">Next stop &rarr;</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WORDS ============ -->
+<section id="words">
+  <div class="wrap">
+    <h2>Two ways to say it</h2>
+    <p class="lead">Developers use special words for everyday things. On this page you get the plain way first, then the <span class="dev">developer word</span> right next to it. Soon you'll use both.</p>
+    <div class="pairs reveal" id="pairs"></div>
+    <div class="parch quiz reveal" id="quiz">
+      <h3>Match the word <span class="score" id="q-score"></span></h3>
+      <p class="small">Pick the developer word that means the plain one. Five right in a row makes it rain gold.</p>
+      <div id="q-body"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CREW / ARCHITECTURE ============ -->
+<section id="crew">
+  <div class="wrap">
+    <h2>Meet the crew (how it's built)</h2>
+    <p class="lead">Every box is a real part of the system. Click one to see what it does and where it lives. Lines light up to show who talks to whom.</p>
+    <div class="nodelist" id="nodelist" aria-label="Parts of the system"></div>
+    <div class="arch">
+      <div class="archmap reveal">
+        <svg id="archsvg" viewBox="0 0 900 470" role="group" aria-label="Map of the system"></svg>
+      </div>
+      <div class="parch detail reveal" id="detail" aria-live="polite"></div>
+    </div>
+    <div class="legend"><span>&#9679; solid box = something you can click</span><span>&#9679; moving dashes = messages travelling</span><span>&#9679; dotted outline = where it runs</span></div>
+  </div>
+</section>
+
+<!-- ============ COMMANDS ============ -->
+<section id="commands">
+  <div class="wrap">
+    <h2>The /arr2d2 commands</h2>
+    <div class="meet"><img class="smooth" src="img/arr2d2.png" alt="arr2d2"><p class="lead">Type these as a comment. arr2d2 is the ship's robot: it only listens to the crew, and only when the command is the <b>very first line</b> of your comment.</p></div>
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" id="tab-idea" aria-selected="true" aria-controls="cmds">On an idea card (issue)</button>
+      <button class="tab" role="tab" id="tab-pr" aria-selected="false" aria-controls="cmds">On a change request (pull request)</button>
+    </div>
+    <div class="cmds" id="cmds" role="tabpanel"></div>
+    <div class="rules">
+      <div class="rule"><b>First line only</b>The command has to start the comment. "ok so /arr2d2 approve" does nothing.</div>
+      <div class="rule"><b>Any capitals</b><code>/ARR2D2 Approve</code> works the same as <code>/arr2d2 approve</code>.</div>
+      <div class="rule"><b>Crew only</b>If you are not on the crew, arr2d2 stays quiet. Signed in to PirateHub? You count as crew.</div>
+      <div class="rule"><b>No self-approval</b>You cannot approve or merge an idea you filed. A second pair of eyes catches things. Developers call this <span class="dev">code review</span>.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PLAYGROUND ============ -->
+<section id="practice">
+  <div class="wrap">
+    <h2>Practice deck</h2>
+    <p class="lead">A pretend comment box that follows the real rules. Pick who you are, what state the idea is in, and try a command. Nothing here touches the real project.</p>
+    <div class="play">
+      <div class="card reveal">
+        <div class="field"><span class="lab">Where are you typing?</span>
+          <div class="seg" id="p-where"><button data-v="idea" aria-pressed="true">On an idea card (issue)</button><button data-v="pr" aria-pressed="false">On a change request (PR)</button></div></div>
+        <div class="field"><span class="lab">Who are you?</span>
+          <div class="seg" id="p-who"><button data-v="mate" aria-pressed="true">A crewmate</button><button data-v="filer" aria-pressed="false">I filed the idea</button><button data-v="out" aria-pressed="false">Not on the crew</button></div></div>
+        <div class="field" id="p-state-f"><span class="lab">What does the idea look like?</span>
+          <div class="seg" id="p-state"><button data-v="ready" aria-pressed="true">Ready for approval</button><button data-v="wait" aria-pressed="false">Waiting for you</button></div></div>
+        <div class="field"><label for="p-input">Your comment</label>
+          <input type="text" id="p-input" value="/arr2d2 approve" autocomplete="off" spellcheck="false">
+          <div class="quick" id="p-quick"></div></div>
+        <button class="btn gold" id="p-send">Post comment</button>
+      </div>
+      <div class="thread reveal" id="thread" aria-live="polite"><p class="small" style="margin:0">Your comments and arr2d2's replies show up here.</p></div>
+    </div>
+    <p class="small">This is a simulation of the real rules, so the exact words arr2d2 uses on GitHub can differ a little.</p>
+  </div>
+</section>
+
+<!-- ============ RULES / LABELS ============ -->
+<section id="rules">
+  <div class="wrap">
+    <h2>Rules of the sea, and the status board</h2>
+    <p class="lead"><b>Labels</b> are colored status tags on an idea card <span class="dev">issue</span>. They tell you at a glance who the ball is with.</p>
+    <div class="labels reveal">
+      <div class="lbl"><span class="chip wfy">waiting-for-you</span><br>arr2d2 asked questions. The person who filed the idea answers in a comment, and arr2d2 reads it again by itself.</div>
+      <div class="lbl"><span class="chip rfa">ready-for-approval</span><br>The idea is clear. A crewmate (not the one who filed it) can type <code>/arr2d2 approve</code>.</div>
+      <div class="lbl"><span class="chip rhw">robot-helper-working</span><br>The coding helper is busy on it. This can take a while, up to half an hour.</div>
+      <div class="lbl"><span class="chip wfm">waiting-for-mentor</span><br>arr2d2 wasn't sure, or the idea wandered off topic twice. A mentor takes a look.</div>
+      <div class="lbl"><span class="chip st">status:backlog / todo / in-progress / done</span><br>The columns on the PirateHub board. They help you track ideas.</div>
+    </div>
+    <h3 style="margin-top:34px">Why the robot has fences</h3>
+    <div class="rules">
+      <div class="rule"><b>Game files only</b>When you type merge (add it to the game), arr2d2 only does it for changes to the game itself. Anything else needs a mentor.</div>
+      <div class="rule"><b>Small steps</b>Big changes (more than 60 files or 2,500 lines) go to a mentor. One small change per change request (pull request).</div>
+      <div class="rule"><b>Tests must pass</b>The game has automatic checks, which developers call <i>tests</i> (80 smoke tests and 224 parity tests). No green check, no merge.</div>
+      <div class="rule"><b>Never straight to main</b>The helper can only open a change request (pull request). A human always presses the button.</div>
+      <div class="rule"><b>Kid-friendly</b>No gore, no real-money gambling, no real brands, no collecting personal info.</div>
+      <div class="rule"><b>Locked settings</b>The helper can't change the workflows, the tools or its own rulebook. That keeps the ship safe.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DOCS ============ -->
+<section id="docs">
+  <div class="wrap">
+    <h2>Docs and links</h2>
+    <div class="links reveal" style="margin:16px 0 30px">
+      <a href="../"><b><img src="img/icon_sword.png" alt="">The game</b><span>Play the newest version, right in your browser.</span></a>
+      <a href="https://piratehub.ca" rel="noopener"><b><img src="img/icon_compass.png" alt="">PirateHub</b><span>Sign in with your access code to post ideas, answer questions and follow the board.</span></a>
+      <a href="https://github.com/worldxours/gobbler-island" rel="noopener"><b><img src="img/icon_gem.png" alt="">Public game repo</b><span>The built game that this website serves. The source code lives in a private repo for the crew.</span></a>
+      <a href="https://docs.godotengine.org/en/stable/" rel="noopener"><b><img src="img/icon_potion.png" alt="">Godot docs</b><span>The game engine we use (version 4.7.2). Great for learning GDScript.</span></a>
+    </div>
+
+    <h3>Quick answers</h3>
+    <details><summary>What makes a good idea?</summary><div>
+      <p>Tell arr2d2 <b>what</b> you want, <b>where</b> it happens, and <b>how it should feel</b>. Keep it to one thing.</p>
+      <p><b>Great:</b> "When you beat the lava dragon, a chest with 50 gold coins should pop out next to the shrine."<br><b>Tricky:</b> "Make the game better."</p>
+      <p>If arr2d2 asks questions, that's good news: it wants to build the right thing. Answer in a comment.</p></div></details>
+    <details><summary>Nothing happened after I posted. What now?</summary><div>
+      <p>Give it a couple of minutes. The robot works on one thing at a time, so it may be busy. Still nothing? Ask a crewmate to type <code>/arr2d2 recheck</code> on the idea, or ask your mentor.</p></div></details>
+    <details><summary>The robot's change isn't quite right. Can I fix it?</summary><div>
+      <p>Yes. On the change request (pull request), comment <code>/arr2d2</code> and then what you want changed, like <code>/arr2d2 make the coin spin slower</code>. The helper updates the same change request and the automatic checks (tests) run again. You can do this as many times as you like.</p></div></details>
+    <details><summary>Can the helper play the game?</summary><div>
+      <p>No. It runs on a small server with no screen, so it can run the automatic tests but it cannot see or feel the game. That is why a human has to playtest. The change request lists what to check.</p></div></details>
+    <details><summary>I merged (added it to the game), but it looks the same.</summary><div>
+      <p>Wait a few minutes for the new build to publish, then do a hard refresh: <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd> on Windows and Linux, or <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd> on a Mac.</p></div></details>
+    <details><summary>Game controls</summary><div>
+      <table>
+        <tr><th>Key</th><th>What it does</th></tr>
+        <tr><td>WASD / arrows</td><td>Walk</td></tr>
+        <tr><td>Mouse + click</td><td>Aim and attack</td></tr>
+        <tr><td>Shift</td><td>Dodge</td></tr>
+        <tr><td>Space</td><td>Class ability / relic art</td></tr>
+        <tr><td>E</td><td>Interact / talk</td></tr>
+        <tr><td>Hold C</td><td>Sprint</td></tr>
+        <tr><td>F / G</td><td>Jump / grapple</td></tr>
+        <tr><td>Q / R</td><td>Use / switch potion</td></tr>
+        <tr><td>I / M</td><td>Inventory / map</td></tr>
+        <tr><td>Esc</td><td>Pause</td></tr>
+      </table></div></details>
+    <details><summary>Run the game on your own computer</summary><div>
+      <p>Install <a href="https://godotengine.org/download" rel="noopener">Godot 4.7.2</a>, get a copy of the project (ask your mentor for access to the private repo), open <code>project.godot</code> and press <kbd>F5</kbd>. The file <code>AGENTS.md</code> in the project explains the code map and how to run the tests.</p></div></details>
+
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span class="spr chest" id="chest" aria-hidden="true" style="transform:scale(.6);transform-origin:center bottom;margin-bottom:-30px"></span>
+    <p><img class="smooth" src="img/arr2d2.png" alt="" width="56" height="56" style="border-radius:12px;border:2px solid var(--edge);display:block;margin:0 auto 8px"><b>arr2d2 says:</b> fair winds, crew! Beep boop.<br>Made by the Gobbler Studios crew. Spot something out of date on this page? Tell your mentor, or file an idea.</p>
+  </div>
+</footer>
+
+<script>
+"use strict";
+const $ = (s, r=document) => r.querySelector(s);
+const el = (t, attrs={}, html="") => { const e=document.createElement(t); for(const k in attrs) e.setAttribute(k,attrs[k]); e.innerHTML=html; return e; };
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const esc = s => s.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ---------- hero: stars and parrot ---------- */
+(() => {
+  const st = $("#stars");
+  for (let i=0;i<46;i++){ const s=el("i"); s.style.left=Math.random()*100+"%"; s.style.top=Math.random()*70+"%"; s.style.animationDelay=(Math.random()*3)+"s"; st.appendChild(s); }
+  const lines = ["Beep boop! I'm arr2d2, the ship's robot. Pleased to meet ye!","Two pairs of eyes beat one. Beep!","Tip: put the /arr2d2 command on the FIRST line.","Pieces of eight! The tests passed!","Small ideas sail fastest. Boop!","Answer my questions and I'll know what you mean.","Never trust a gull. Always trust the tests."];
+  const b=$("#bubble"); let t, n=0;
+  $("#parrot").addEventListener("click", () => { b.textContent=lines[n++%lines.length]; b.classList.add("show"); clearTimeout(t); t=setTimeout(()=>b.classList.remove("show"),3500); });
+})();
+
+/* ---------- copy buttons ---------- */
+document.addEventListener("click", async e => {
+  const b = e.target.closest(".copy"); if(!b) return;
+  try { await navigator.clipboard.writeText(b.dataset.copy); b.textContent="Copied!"; } catch { b.textContent="Press Ctrl+C"; }
+  setTimeout(()=>b.textContent="Copy",1500);
+});
+const cmdBox = c => `<div class="cmdbox"><span>${esc(c)}</span><button class="copy" data-copy="${esc(c)}">Copy</button></div>`;
+
+/* ---------- the voyage ---------- */
+const D = t => `<span class="dev">${t}</span>`;
+const STEPS = [
+ {t:"Drop an idea", who:"You", ico:"icon_sword", dev:"Creating an issue",
+  body:`<p>Sign in to <b>PirateHub</b> with your access code and post an idea: a short title, and a few sentences about what you picture.</p>
+        <p>Behind the curtain, PirateHub creates an <b>idea card</b> ${D("issue")} in the crew's private game home base ${D("repository")}. The first line says <code>Posted by @you via PirateHub</code>, so everyone knows whose idea it is.</p>`,
+  see:`<span class="chip st">status:todo</span> on the PirateHub board`,
+  tip:"Say <b>what</b> you want, <b>where</b> it happens, and <b>how it should feel</b>. One idea per card."},
+ {t:"arr2d2 reads it", who:"arr2d2", ico:"icon_compass", dev:"Triage (sorting new work)",
+  body:`<p>Within a minute or two, arr2d2 (the front desk robot) reads your idea and decides:</p>
+        <ul><li><b>Clear?</b> It marks it ready for a crewmate to approve.</li><li><b>Needs details?</b> It asks you friendly questions.</li><li><b>Not about the game?</b> One nudge back to the game, and a mentor if it happens again.</li><li><b>Unsure or unsafe?</b> A mentor takes a look.</li></ul>`,
+  see:`<span class="chip rfa">ready-for-approval</span> <span class="chip wfy">waiting-for-you</span> <span class="chip wfm">waiting-for-mentor</span>`,
+  tip:"arr2d2 is a robot and sometimes it misses. If nothing happens, ask a crewmate for <code>/arr2d2 recheck</code>."},
+ {t:"Answer questions", who:"You", ico:"icon_potion", dev:"Clarifying the requirements",
+  body:`<p>If arr2d2 asked questions, answer them in a comment on your idea card. In PirateHub the questions show up as a card: tap an answer for each question (or pick <i>Something else</i> and type your own), then send. On GitHub the same questions are a list, so just reply in words. When <i>you</i> reply while the idea is <code>waiting-for-you</code>, arr2d2 reads it again by itself. No command needed.</p>
+        <p>This loop can run a few times until the idea is clear. That's normal!</p>`,
+  see:`<span class="chip wfy">waiting-for-you</span> &rarr; <span class="chip rfa">ready-for-approval</span>`,
+  cmd:"/arr2d2 recheck", cmdnote:"A crewmate can also ask for another look:",
+  tip:"Short answers are fine. Pictures help too: describe what you imagine."},
+ {t:"A crewmate approves", who:"Crewmate", ico:"icon_armor", dev:"Code review and approval",
+  body:`<p>A <b>different</b> person from the crew reads the idea and, if it sounds good, types the approve command. This is the "second pair of eyes" rule ${D("code review")}: nobody approves their own idea.</p>
+        <p>The idea has to be <code>ready-for-approval</code> first.</p>`,
+  see:`<span class="chip rfa">ready-for-approval</span> &rarr; <span class="chip rhw">robot-helper-working</span>`,
+  cmd:"/arr2d2 approve", tip:"Try typing this yourself on a friend's idea. If it is your own, arr2d2 will politely say no."},
+ {t:"The robot helper builds", who:"Robot helper", ico:"icon_gem", dev:"Branch, commit, open a pull request",
+  body:`<p>The coding helper wakes up on the crew's server (the "engine room"). It reads the rulebook (<code>AGENTS.md</code>), makes its own side copy of the game ${D("branch")} named like <code>agent/issue-18-boss-fights</code>, changes the game ${D("commit")}, runs the automatic checks ${D("tests")}, and opens a <b>change request</b> ${D("pull request, PR")}.</p>
+        <p>The change request says in plain words: <b>what changed</b>, <b>how it was tested</b>, and <b>what to check when you play</b>.</p>`,
+  see:`<span class="chip rhw">robot-helper-working</span> while it works (up to 30 minutes)`,
+  tip:"It can't play the game on its own: no screen. That's your job in the next stop."},
+ {t:"Try it and tweak it", who:"Everyone", ico:"icon_potion", dev:"Review feedback and iterating",
+  body:`<p>When the helper finishes, arr2d2 posts a <b>Play this version</b> link on the change request ${D("pull request")}. It opens the real game with the change added, so you can <b>actually play it</b> before it goes in. It starts a fresh game, so your real saves are safe.</p>
+        <p>Want to see a picture or hear a sound before the change is built? Ask for a <b>preview</b>. arr2d2 makes it and shares it in the crew's shared Drive folder.</p>
+        <p>Not quite right on the change request ${D("pull request")}? Comment <code>/arr2d2</code> and what to change. The helper fixes the same change request and the tests run again. Repeat as often as you like.</p>`,
+  see:`A "Play this version" link in a comment, or new saved steps (commits) on the change request`,
+  cmd:"/arr2d2 preview a gold coin", cmdnote:"On the idea:",
+  cmd2:"/arr2d2 make the coin spin slower", cmd2note:"On the change request (pull request):",
+  tip:"Playtest it! The change request (pull request) lists what to look for."},
+ {t:"Merge it", who:"Crewmate", ico:"icon_bag", dev:"Merging the pull request",
+  body:`<p>When it feels right, a crewmate who did <b>not</b> file the idea types the command to add it to the official game ${D("merge")}. arr2d2 checks the rules first:</p>
+        <ul class="checks"><li>The helper opened it, and it's still open</li><li>You did not file the idea</li><li>Only game files changed</li><li>It's a small change</li><li>The automatic checks passed ${D("tests")}</li><li>No clashes with the official copy ${D("merge conflicts")}</li><li>The idea is still open</li></ul>
+        <p>If something fails, arr2d2 tells you which one in plain words.</p>`,
+  see:`A comment from arr2d2: "Merged, thanks!"`,
+  cmd:"/arr2d2 merge", tip:"Play the preview and wait for the green tests check before you merge."},
+ {t:"Sail! It's live", who:"Everyone", ico:"icon_coin", dev:"Deploying the new version",
+  body:`<p>Merging closes the idea card and adds the change to <b>main</b> ${D("the main branch")}, the official copy of the game. A few minutes later the game is rebuilt and put on this website ${D("deploy")}.</p>
+        <p>Do a hard refresh, load the game, and find your idea. You made that. High five.</p>`,
+  see:`The idea is closed. The game page updates.`,
+  tip:"Hard refresh: Ctrl+Shift+R (Cmd+Shift+R on a Mac).", end:true}
+];
+let cur = 0;
+(() => {
+  const stops=$("#stops"), ship=$("#ship");
+  STEPS.forEach((s,i)=>{
+    const b=el("button",{class:"stop","aria-label":`Stop ${i+1}: ${s.t}`});
+    b.innerHTML=`<span class="dot">${i+1}</span><span class="t">${s.t}</span>`;
+    b.addEventListener("click",()=>go(i,true)); stops.appendChild(b);
+  });
+  window.go = function(i,fromUser){
+    cur=Math.max(0,Math.min(STEPS.length-1,i));
+    const s=STEPS[cur];
+    [...stops.children].forEach((b,j)=>{b.classList.toggle("on",j===cur);b.classList.toggle("done",j<cur)});
+    const target=stops.children[cur].querySelector(".dot"); const m=$("#map").getBoundingClientRect(), d=target.getBoundingClientRect();
+    ship.style.left=(d.left-m.left+d.width/2)+"px";
+    let h=`<div class="cols"><div><span class="who"><img class="${/^(arr2d2|Robot helper)$/.test(s.who)?"smooth":""}" src="img/${/^(arr2d2|Robot helper)$/.test(s.who)?"arr2d2":s.ico}.png" width="22" height="22" alt="">${s.who}</span>
+      <h3>${cur+1}. ${s.t}</h3><p class="devline">Developers call this: <b>${s.dev}</b></p>${s.body}</div><div>`;
+    h+=`<div class="see"><b>WHAT YOU'LL SEE</b>${s.see}</div>`;
+    if(s.cmd) h+=`<div class="see"><b>${s.cmdnote?s.cmdnote.toUpperCase():"WHAT YOU TYPE"}</b>${cmdBox(s.cmd)}${s.cmd2?`<b style="margin-top:8px">${s.cmd2note.toUpperCase()}</b>${cmdBox(s.cmd2)}`:""}</div>`;
+    if(s.tip) h+=`<div class="tip"><b>Tip:</b> ${s.tip}</div>`;
+    h+=`</div></div>`;
+    const box=$("#step"); box.innerHTML=h; box.classList.add("in");
+    $("#prev").disabled=cur===0; $("#next").textContent=cur===STEPS.length-1?"Back to start":"Next stop →";
+    if(history.replaceState) history.replaceState(null,"","#stop-"+(cur+1)==="#stop-1"?location.pathname:"#stop-"+(cur+1));
+    if(s.end && fromUser!==undefined && !reduce) rain();
+  };
+  $("#prev").onclick=()=>go(cur-1,true);
+  $("#next").onclick=()=>go(cur===STEPS.length-1?0:cur+1,true);
+  document.addEventListener("keydown",e=>{
+    if(e.target.matches("input,select,textarea")) return;
+    const r=$("#voyage").getBoundingClientRect(); if(r.bottom<0||r.top>innerHeight) return;
+    if(e.key==="ArrowRight") go(cur+1,true); else if(e.key==="ArrowLeft") go(cur-1,true);
+  });
+  addEventListener("resize",()=>go(cur));
+  const m=/^#stop-(\d)$/.exec(location.hash); go(m?+m[1]-1:0);
+  document.fonts&&document.fonts.ready.then(()=>go(cur));
+})();
+function rain(){ for(let i=0;i<24;i++){ const c=el("div",{class:"coin"}); c.style.left=Math.random()*100+"vw"; c.style.animationDuration=(1.4+Math.random()*1.6)+"s"; c.style.animationDelay=(Math.random()*.6)+"s"; document.body.appendChild(c); setTimeout(()=>c.remove(),4000); } }
+
+/* ---------- two ways to say it ---------- */
+const PAIRS = [
+ ["idea card","issue","A card that describes something you want. Bugs, features and to-dos are all issues."],
+ ["change request","pull request (PR)","A proposed change to the game that people read and test before it joins."],
+ ["add it to the game","merge","Joining a proposed change into the official copy."],
+ ["side copy","branch","A safe copy where changes happen without breaking the official game."],
+ ["official copy","main (the main branch)","The version of the game that counts. What is on main is what ships."],
+ ["automatic checks","tests","Little programs that check the game still works after a change."],
+ ["go live","deploy","Putting the new version where players can reach it."],
+ ["crew home base","repository (repo)","The project folder on GitHub: code, ideas, changes and history."],
+ ["status tag","label","A colored tag on an idea card that shows where it is."],
+ ["second pair of eyes","code review","Someone else reads a change before it is accepted."],
+ ["automatic recipe","workflow (GitHub Action)","Steps GitHub follows by itself when something happens, like a new comment."],
+ ["the engine-room computer","runner (a server)","The computer that follows those recipes."],
+ ["the robot's badge","GitHub App (bot)","A robot account with its own name and limited powers. arr2d2 is one."],
+ ["save a change","commit","One saved step of work, with a note about what changed."],
+ ["the helper's rulebook","AGENTS.md","A file of instructions for AI helpers: how the code is laid out and what they must never do."],
+ ["chat command","slash command","A comment that starts with / and tells a bot what to do, like /arr2d2 approve."]
+];
+(() => {
+  $("#pairs").innerHTML = PAIRS.map(([a,b,m]) => `<div class="pair"><span class="a">${esc(a)}<span class="arrow">&rarr;</span><span class="b">${esc(b)}</span></span><p>${esc(m)}</p></div>`).join("");
+  let streak=0, right=0, total=0, cur;
+  const body=$("#q-body"), score=$("#q-score");
+  const shuffle=a=>a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);
+  function ask(){
+    cur=PAIRS[Math.floor(Math.random()*PAIRS.length)];
+    const wrong=shuffle(PAIRS.filter(p=>p!==cur)).slice(0,2).map(p=>p[1]);
+    const opts=shuffle([cur[1],...wrong]);
+    body.innerHTML=`<p class="qtext">Developers call a <b>${esc(cur[0])}</b> a...</p><div class="opts">${opts.map(o=>`<button type="button">${esc(o)}</button>`).join("")}</div><div class="fb" aria-live="polite"></div>`;
+    body.querySelectorAll("button").forEach(b=>b.onclick=()=>pick(b));
+  }
+  function pick(b){
+    const ok=b.textContent===cur[1], fb=body.querySelector(".fb"); total++;
+    body.querySelectorAll("button").forEach(x=>{x.disabled=true; if(x.textContent===cur[1]) x.classList.add("ok")});
+    if(ok){ right++; streak++; fb.textContent=streak>=5&&streak%5===0?"Five in a row! Gold for the crew!":"Aye! "+cur[2]; if(streak%5===0&&!reduce) rain(); }
+    else { streak=0; b.classList.add("no"); fb.textContent="Not quite. "+cur[0]+" is called "+cur[1]+". "+cur[2]; }
+    score.textContent=right+" / "+total;
+    const n=el("button",{type:"button",class:"btn gold",style:"margin-top:10px"},"Next word"); n.onclick=ask; body.appendChild(n); n.focus();
+  }
+  ask();
+})();
+
+/* ---------- architecture map ---------- */
+const NODES = [
+ {id:"you",  x:20, y:30,  w:150,h:60, t:"You",           s:"browser",            where:"Anywhere",
+  d:"That's you. You use PirateHub to post ideas and chat, and the game site to play. If you're a crewmate you can also type /arr2d2 commands in comments."},
+ {id:"hub",  x:20, y:150, w:150,h:60, t:"PirateHub",     s:"idea website",      where:"Runs on the crew's server (VPS). Sign in with your access code.",
+  d:"The friendly front door. You log in with an access code, post ideas, answer questions and watch the board. When you post, PirateHub writes it on GitHub for you and stamps your name on the first line."},
+ {id:"repo", x:270,y:150, w:170,h:60, t:"GitHub repo",   s:"ideas, changes, labels", where:"github.com/worldxours/piratecr3w (private: crew only)",
+  d:"The crew's home base. Ideas are idea cards ('issues'), proposed changes are change requests ('pull requests'), and labels are the status tags. The code and AGENTS.md live here, and main is the official copy of the game."},
+ {id:"app",  x:270,y:30,  w:170,h:60, t:"arr2d2",        s:"GitHub App", where:"A GitHub App installed on the repo",
+  d:"arr2d2's badge. Every arr2d2 comment, label and change request (pull request) is made with this badge, so you can tell the robot from a human. It only has the powers the crew gave it, and it can't touch the workflow recipes."},
+ {id:"run",  x:540,y:150, w:150,h:60, t:"Engine room",   s:"self-hosted runner", where:"A small Linux server (VPS) with 2 CPUs and ~3.7 GB RAM",
+  d:"The server that actually does the work. GitHub tells it 'a comment arrived', and it runs the right recipe (workflow). It does one job at a time, so if the robot is busy, others wait their turn. The helper runs here as a limited user with no admin powers."},
+ {id:"gate", x:730,y:30,  w:150,h:60, t:"Doorman",       s:"gate.py",           where:"tools/arr2d2/gate.py (in the repo)",
+  d:"Reads every comment and decides what it means: approve, recheck, preview, merge, or just chat. It enforces the rules: first line only, crew only, no approving your own idea. It has its own automatic tests."},
+ {id:"chk",  x:730,y:130, w:150,h:60, t:"Front desk",    s:"check.sh + AI",      where:"tools/arr2d2/check.sh",
+  d:"Reads a new idea and decides if it's clear, needs questions, is off-topic, or needs a mentor. An AI model helps, but it has no tools and no access: it can only answer. Its words are cleaned (no links or @mentions) before posting."},
+ {id:"help", x:730,y:230, w:150,h:60, t:"Coding helper", s:"agent.sh + AI",      where:"tools/arr2d2/agent.sh, using OpenCode",
+  d:"Builds the change. It works on its own side copy (branch), follows AGENTS.md, runs the automatic checks (tests) and opens a change request (pull request). It never pushes to main, and the script refuses to commit changes to the workflows, tools or rulebook."},
+ {id:"test", x:540,y:290, w:150,h:60, t:"Tests",         s:"Godot, headless",    where:"tests/smoke.gd and tests/parity.gd",
+  d:"Automatic checks that start the game with no screen and test it (80 smoke checks and 224 parity checks). The merge command needs a passing 'tests' check on the newest version of the change request (pull request)."},
+ {id:"drive",x:730,y:385, w:150,h:60, t:"Shared Drive",  s:"preview pictures/sounds", where:"A Google Drive folder shared with the crew",
+  d:"Where previews go. The helper makes a picture or sound, a small uploader checks it (safe file types, 8 MB max) and puts it in the shared folder, then posts the link. Only crew members the folder is shared with can open it."},
+ {id:"pub",  x:270,y:290, w:170,h:60, t:"Publisher",     s:"export + publish",   where:".github/workflows/publish-web.yml and tools/publish_web.sh",
+  d:"When game files land on main, this exports the game for the web and copies it to the public site. It replaces the old build, so the newest version is always the one players get."},
+ {id:"game", x:20, y:410, w:200,h:50, t:"The game site", s:"public, anyone can play", where:"Public: anyone can play",
+  d:"The live game. GitHub Pages serves it from the public gobbler-island repo. This guide lives here too, under /guide/."}
+];
+const DEV={you:"a user",hub:"a web app",repo:"a repository (repo)",app:"a GitHub App, which is a bot account",run:"a self-hosted runner (a server)",gate:"a script that checks permissions",chk:"a triage script",help:"an AI coding agent",test:"automated tests",drive:"cloud file storage",pub:"a deploy pipeline",game:"the production site"};
+const EDGES = [
+ ["you","hub"],["hub","repo"],["repo","run"],["run","gate"],["run","chk"],["run","help"],["help","test"],["help","drive"],
+ ["run","app"],["app","repo"],["test","repo"],["repo","pub"],["pub","game"],["you","game"]
+];
+(() => {
+  const svg=$("#archsvg"), NS="http://www.w3.org/2000/svg", byId={};
+  NODES.forEach(n=>byId[n.id]=n);
+  const mk=(t,a={})=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);return e};
+  // zones
+  [["YOUR SIDE",8,8,175,225],["GITHUB",258,8,196,225],["THE ENGINE ROOM (server)",528,8,364,352],["OUT TO THE WORLD",8,270,450,200]].forEach(([l,x,y,w,h],i)=>{
+    if(i===3){ svg.appendChild(mk("rect",{x:8,y:372,width:450,height:92,rx:12,class:"zone"})); const t=mk("text",{x:18,y:388,class:"zonelabel"}); t.textContent="OUT TO THE WORLD"; svg.appendChild(t); return; }
+    svg.appendChild(mk("rect",{x,y,width:w,height:h,rx:12,class:"zone"}));
+    const t=mk("text",{x:x+10,y:y+(i===2?348+18:h-10),class:"zonelabel"}); if(i===2) t.setAttribute("y",y+338); t.textContent=l; svg.appendChild(t);
+  });
+  const edgeEls=[];
+  const anchor=(a,b)=>{ // centre-to-centre line clipped to box edges
+    const ax=a.x+a.w/2,ay=a.y+a.h/2,bx=b.x+b.w/2,by=b.y+b.h/2,dx=bx-ax,dy=by-ay;
+    const clip=(n,cx,cy,sx,sy)=>{const k=Math.min(Math.abs(sx)>0?(n.w/2)/Math.abs(sx):1e9,Math.abs(sy)>0?(n.h/2)/Math.abs(sy):1e9);return [cx+sx*k,cy+sy*k]};
+    return [clip(a,ax,ay,dx,dy),clip(b,bx,by,-dx,-dy)];
+  };
+  EDGES.forEach(([f,t])=>{
+    const [[x1,y1],[x2,y2]]=anchor(byId[f],byId[t]);
+    const p=mk("path",{d:`M${x1} ${y1} L${x2} ${y2}`,class:"edge","data-a":f,"data-b":t}); svg.appendChild(p); edgeEls.push(p);
+  });
+  const groupEls={};
+  NODES.forEach(n=>{
+    const g=mk("g",{class:"node",tabindex:0,role:"button","aria-label":n.t+": "+n.s}); groupEls[n.id]=g;
+    g.appendChild(mk("rect",{x:n.x,y:n.y,width:n.w,height:n.h}));
+    const dx=n.id==="app"?22:0;
+    if(n.id==="app"){ const im=mk("image",{href:"img/arr2d2.png",x:n.x+8,y:n.y+8,width:44,height:44,"clip-path":"inset(0 round 8px)"}); im.style.imageRendering="auto"; g.appendChild(im); }
+    const t1=mk("text",{x:n.x+n.w/2+dx,y:n.y+n.h/2-3,"text-anchor":"middle"}); t1.textContent=n.t;
+    const t2=mk("text",{x:n.x+n.w/2+dx,y:n.y+n.h/2+14,"text-anchor":"middle",class:"sub"}); t2.textContent=n.s;
+    g.append(t1,t2);
+    g.addEventListener("click",()=>pick(n.id)); g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();pick(n.id)}});
+    svg.appendChild(g);
+  });
+  const list=$("#nodelist"), btns={};
+  NODES.forEach(n=>{const b=el("button",{},n.t); b.onclick=()=>pick(n.id); list.appendChild(b); btns[n.id]=b;});
+  function pick(id){
+    const n=byId[id];
+    Object.entries(groupEls).forEach(([k,g])=>g.classList.toggle("on",k===id));
+    Object.entries(btns).forEach(([k,b])=>b.classList.toggle("on",k===id));
+    edgeEls.forEach(e=>e.classList.toggle("on",e.dataset.a===id||e.dataset.b===id));
+    const talks=EDGES.filter(e=>e.includes(id)).map(e=>byId[e[0]===id?e[1]:e[0]].t);
+    $("#detail").innerHTML=`${id==="app"?'<img class="smooth" src="img/arr2d2.png" alt="arr2d2" style="float:right;width:88px;height:88px;border-radius:12px;margin:0 0 8px 12px;border:2px solid #8a6f3e">':""}<h3>${n.t}</h3><p class="devline">Developers call it: <b>${DEV[id]}</b></p><p>${n.d}</p>
+      <p class="small"><b>Talks to:</b> ${talks.join(", ")}</p><div class="where"><b>Where to find it:</b> ${n.where}</div>`;
+  }
+  pick("run");
+})();
+
+/* ---------- command cards ---------- */
+const CMDS = {
+ idea:[
+  {c:"/arr2d2 approve", who:"A crewmate who did not file the idea", when:"The idea has the ready-for-approval label", what:"Wakes the coding helper, which builds the idea and opens a change request (pull request)."},
+  {c:"/arr2d2 recheck", who:"Any crewmate", when:"Any time", what:"Makes arr2d2 read the idea again. Handy if it missed your answers or you edited the idea."},
+  {c:"/arr2d2 preview a gold coin", who:"Any crewmate, including the person who filed it", when:"Any time", what:"The helper makes a simple picture or sound and posts a link to it in the shared folder. It changes no game files. Allowed: png, jpg, gif, webp, mp3, ogg, wav (8 MB max)."},
+  {c:"(just reply)", plain:true, who:"The person who filed the idea", when:"The idea is waiting-for-you", what:"No command needed. Answer arr2d2's questions in a normal comment and it checks again by itself."}
+ ],
+ pr:[
+  {c:"/arr2d2 merge", who:"A crewmate who did not file the idea", when:"The automatic checks (tests) are green and the change request came from the helper", what:"arr2d2 checks the rules (game files only, small, tests passed, no clashes) and adds it to the game (merges). The idea card closes and the game goes live (deploys)."},
+  {c:"/arr2d2 make the parrot bluer", who:"Any crewmate", when:"The change request is open", what:"Anything after /arr2d2 that is not 'merge' is a request for changes. The helper updates the same change request (pull request) and the automatic checks (tests) run again."}
+ ]
+};
+(() => {
+  const box=$("#cmds");
+  function show(k){
+    $("#tab-idea").setAttribute("aria-selected",k==="idea"); $("#tab-pr").setAttribute("aria-selected",k==="pr");
+    box.innerHTML=CMDS[k].map(m=>`<div class="parch cmd">${m.plain?`<div class="cmdbox"><span style="color:#9aa">${m.c}</span></div>`:cmdBox(m.c)}
+      <dl><dt>WHO CAN USE IT</dt><dd>${m.who}</dd><dt>WHEN</dt><dd>${m.when}</dd><dt>WHAT HAPPENS</dt><dd>${m.what}</dd></dl></div>`).join("");
+  }
+  $("#tab-idea").onclick=()=>show("idea"); $("#tab-pr").onclick=()=>show("pr"); show("idea");
+})();
+
+/* ---------- practice deck (mirrors tools/arr2d2/gate.py) ---------- */
+(() => {
+  const S={where:"idea",who:"mate",state:"ready"};
+  const seg=(id,key)=>{ const g=$(id); g.addEventListener("click",e=>{const b=e.target.closest("button"); if(!b) return; S[key]=b.dataset.v; [...g.children].forEach(x=>x.setAttribute("aria-pressed",x===b)); sync(); }); };
+  seg("#p-where","where"); seg("#p-who","who"); seg("#p-state","state");
+  const QUICK={idea:["/arr2d2 approve","/arr2d2 recheck","/arr2d2 preview a gold coin","/arr2d2","looks fun! /arr2d2 approve","thanks, it's the red parrot"],
+               pr:["/arr2d2 merge","/arr2d2 make the coin spin slower","/arr2d2","great work!"]};
+  function sync(){
+    $("#p-state-f").style.display=S.where==="idea"?"":"none";
+    const q=$("#p-quick"); q.innerHTML=""; QUICK[S.where].forEach(c=>{const b=el("button",{type:"button"},esc(c)); b.onclick=()=>{$("#p-input").value=c; send()}; q.appendChild(b)});
+  }
+  const NAMES={mate:"you (crewmate)",filer:"you (idea owner)",out:"you (outsider)"};
+  function firstCmd(text){ // same rule as gate.py: first non-empty line must be the command
+    const line=text.split("\n").find(l=>l.trim()); if(!line) return null;
+    const m=/^\s*\/arr2d2(?:\s+(.*\S))?\s*$/i.exec(line); return m?(m[1]||"").trim():null;
+  }
+  function reply(text){
+    const cmd=firstCmd(text), crew=S.who!=="out";
+    const nope="arr2d2 does not react. (It's just a normal comment.)";
+    if(S.where==="idea"){
+      if(cmd===null){ if(S.who==="filer"&&S.state==="wait") return {ok:1,html:"<b>arr2d2 reads your reply and checks the idea again by itself.</b> You'll see new labels or new questions in a minute."}; return {nope}; }
+      if(!crew) return {nope:"arr2d2 only listens to the crew, so nothing happens."};
+      const sub=cmd.toLowerCase(), parts=cmd.split(/\s+/);
+      if(sub==="approve"){
+        if(S.who==="filer") return {bad:1,html:"Thanks, but you filed this idea, so a teammate needs to approve it. A second pair of eyes helps."};
+        if(S.state!=="ready") return {bad:1,html:"Not yet: this idea is not marked ready for approval. Check the labels and the latest comments first."};
+        return {ok:1,html:"<b>Approved!</b> The coding helper is starting. Watch for the <code>robot-helper-working</code> label, then a change request (pull request)."};
+      }
+      if(sub==="recheck") return {ok:1,html:"Reading the idea again... you'll get new labels or new questions in a minute."};
+      if(parts[0].toLowerCase()==="preview"&&parts.length>1) return {ok:1,html:`Making a preview of "<i>${esc(cmd.slice(8))}</i>". Link coming in the shared folder.`};
+      return {bad:1,html:"Here is what you can type: <code>/arr2d2 approve</code>, <code>/arr2d2 preview &lt;what you want to see&gt;</code> or <code>/arr2d2 recheck</code>."};
+    }
+    if(cmd===null||cmd==="") return {nope};
+    if(!crew) return {nope:"arr2d2 only listens to the crew, so nothing happens."};
+    if(cmd.toLowerCase()==="merge"){
+      if(S.who==="filer") return {bad:1,html:"I did not merge this yet: you filed this idea, so another teammate needs to look it over and type the command. A second pair of eyes catches things."};
+      return {ok:1,html:`<b>Checking the rules...</b><ul class="checks"><li>Opened by the helper, still open</li><li>You did not file the idea</li><li>Only game files changed</li><li>Small enough</li><li>Tests passed</li><li>No clashes</li></ul><b>Merged, thanks!</b> The live game updates in a few minutes.`};
+    }
+    return {ok:1,html:`Got it: "<i>${esc(cmd)}</i>". The helper is updating the change request (pull request), and the automatic checks (tests) will run again.`};
+  }
+  function say(who,cls,name,html,extra=""){ const m=el("div",{class:"msg"}); m.innerHTML=`<div class="av ${cls}${cls==="bot"?" pic":""}">${cls==="bot"?'<img class="smooth" src="img/arr2d2.png" alt="">':who}</div><div class="bub ${extra}"><span class="nm">${name}</span>${html}</div>`; const t=$("#thread"); if(t.firstElementChild&&t.firstElementChild.tagName==="P") t.innerHTML=""; t.appendChild(m); }
+  function send(){
+    const text=$("#p-input").value; if(!text.trim()) return;
+    say(S.who==="out"?"?":"ME","me",NAMES[S.who],esc(text));
+    const r=reply(text);
+    setTimeout(()=>{ if(r.nope) say("-","sys","nothing happens",esc(r.nope),"nope"); else say("R2","bot","arr2d2",r.html); },reduce?0:350);
+  }
+  $("#p-send").onclick=send;
+  $("#p-input").addEventListener("keydown",e=>{if(e.key==="Enter")send()});
+  sync();
+})();
+
+/* ---------- reveal on scroll + nav highlight ---------- */
+(() => {
+  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target)}}),{threshold:.08});
+  document.querySelectorAll(".reveal").forEach(n=>io.observe(n));
+  const links=[...document.querySelectorAll("nav.top a[href^='#']:not(.brand)")];
+  const so=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting) links.forEach(a=>a.classList.toggle("on",a.getAttribute("href")==="#"+e.target.id))}),{rootMargin:"-45% 0px -50% 0px"});
+  links.forEach(a=>{const s=document.querySelector(a.getAttribute("href")); s&&so.observe(s)});
+  $("#chest").addEventListener("click",function(){this.classList.add("open"); if(!reduce) rain(); setTimeout(()=>this.classList.remove("open"),1800)});
+})();
+</script>
+</body>
+</html>
